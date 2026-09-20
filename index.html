@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FREE FIRE AIMBOT</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Courier New", monospace;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at center, #172b22 0%, #07100c 45%, #020403 100%);
+    color: #00ff88;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0,255,120,.025) 0px,
+        rgba(0,255,120,.025) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    pointer-events: none;
+}
+
+.panel {
+    width: min(900px, 94%);
+    background: rgba(3, 10, 7, .96);
+    border: 1px solid #00ff88;
+    box-shadow:
+        0 0 20px rgba(0,255,120,.25),
+        inset 0 0 30px rgba(0,255,120,.04);
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.title h1 {
+    font-size: 32px;
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px #00ff88;
+}
+
+.title p {
+    color: #65c997;
+    margin-top: 7px;
+    font-size: 12px;
+}
+
+.status {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #124d35;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: rgba(0,255,120,.03);
+}
+
+.online {
+    color: #00ff88;
+}
+
+.offline {
+    color: #ff4545;
+}
+
+.warning {
+    color: #ffd000;
+}
+
+.terminal {
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #124d35;
+    background: #020604;
+    padding: 15px;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.terminal::-webkit-scrollbar {
+    width: 5px;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+    background: #00ff88;
+}
+
+.log {
+    opacity: .9;
+}
+
+.success {
+    color: #00ff88;
+}
+
+.blue {
+    color: #48aaff;
+}
+
+.progress-container {
+    border: 1px solid #124d35;
+    height: 22px;
+    padding: 3px;
+    margin-bottom: 18px;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        #00a95c,
+        #00ff88
+    );
+    box-shadow: 0 0 10px #00ff88;
+    transition: width .3s;
+}
+
+/* OPCIONES */
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.option-group {
+    border: 1px solid #124d35;
+    background: rgba(0,255,120,.025);
+    padding: 14px;
+}
+
+.option-title {
+    color: #00ff88;
+    font-weight: bold;
+    border-bottom: 1px solid #124d35;
+    padding-bottom: 8px;
+    margin-bottom: 5px;
+}
+
+.option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(18,77,53,.45);
+}
+
+.option:last-child {
+    border-bottom: none;
+}
+
+.option-name {
+    color: #9be8bd;
+    font-size: 13px;
+}
+
+/* SWITCH */
+
+.switch {
+    position: relative;
+    width: 42px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #18231d;
+    border: 1px solid #315c47;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background: #777;
+    border-radius: 50%;
+    transition: .25s;
+}
+
+input:checked + .slider {
+    background: #006b39;
+    border-color: #00ff88;
+    box-shadow: 0 0 10px rgba(0,255,136,.5);
+}
+
+input:checked + .slider::before {
+    transform: translateX(20px);
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+}
+
+/* BOTONES */
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+button {
+    background: #06150d;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    padding: 13px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: .2s;
+}
+
+button:hover {
+    background: #00ff88;
+    color: #020604;
+    box-shadow: 0 0 15px #00ff88;
+}
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+/* NOTIFICACIÓN */
+
+.notification {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120px);
+    background: #020604;
+    border: 1px solid #00ff88;
+    color: #00ff88;
+    padding: 16px 25px;
+    border-radius: 6px;
+    box-shadow: 0 0 25px rgba(0,255,136,.3);
+    opacity: 0;
+    transition: .35s;
+    z-index: 100;
+    text-align: center;
+    min-width: 280px;
+}
+
+.notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.notification-small {
+    color: #65c997;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.footer {
+    text-align: center;
+    color: #315c47;
+    font-size: 10px;
+    margin-top: 18px;
+}
+
+@media(max-width: 650px) {
+
+    .options {
+        grid-template-columns: 1fr;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .title h1 {
+        font-size: 23px;
+    }
+
+    .panel {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+    <div class="title">
+        <h1>FF AIMBOT ENGINE</h1>
+        <p>ADVANCED TARGETING SIMULATOR v9.7</p>
+    </div>
+
+    <div class="status">
+        <span>ENGINE STATUS:</span>
+        <span id="status" class="offline">● OFFLINE</span>
+    </div>
+
+
+    <!-- OPCIONES -->
+
+    <div class="options">
+
+        <!-- AIM -->
+
+        <div class="option-group">
+
+            <div class="option-title">
+                AIM SETTINGS
+            </div>
+
+            <div class="option">
+                <span class="option-name">HS pecho</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="hsPecho">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">HS cuello</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="hsCuello">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">HS alto</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="hsAlto">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+        </div>
+
+
+        <!-- ESP -->
+
+        <div class="option-group">
+
+            <div class="option-title">
+                ESP SETTINGS
+            </div>
+
+            <div class="option">
+                <span class="option-name">Caja</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="caja">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">Cuerpo</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="cuerpo">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">ESP moco</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="moco">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">Línea</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="linea">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">Esqueleto</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="esqueleto">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+        </div>
+
+
+        <!-- SISTEMA -->
+
+        <div class="option-group">
+
+            <div class="option-title">
+                SYSTEM
+            </div>
+
+            <div class="option">
+                <span class="option-name">Anti ban</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="antiban">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="option">
+                <span class="option-name">Reset</span>
+
+                <label class="switch">
+                    <input type="checkbox" id="reset">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TERMINAL -->
+
+    <div class="terminal" id="terminal">
+
+        <div class="log">
+            [SYSTEM] Waiting for command...
+        </div>
+
+    </div>
+
+
+    <!-- PROGRESO -->
+
+    <div class="progress-container">
+
+        <div class="progress" id="progress"></div>
+
+    </div>
+
+
+    <!-- BOTONES -->
+
+    <div class="controls">
+
+        <button onclick="inyectar()" id="injectBtn">
+            INYECTAR
+        </button>
+
+        <button onclick="resetear()">
+            RESET
+        </button>
+
+    </div>
+
+
+    <div class="footer">
+        VISUAL SIMULATION — NO GAME FILES ARE MODIFIED
+    </div>
+
+</div>
+
+
+<!-- NOTIFICACIÓN -->
+
+<div class="notification" id="notification">
+
+    <div class="notification-title" id="notificationTitle">
+        INYECTANDO...
+    </div>
+
+    <div class="notification-small" id="notificationSmall">
+        Inicializando módulos...
+    </div>
+
+</div>
+
+
+<script>
+
+const terminal =
+    document.getElementById("terminal");
+
+const progress =
+    document.getElementById("progress");
+
+const status =
+    document.getElementById("status");
+
+const notification =
+    document.getElementById("notification");
+
+const notificationTitle =
+    document.getElementById("notificationTitle");
+
+const notificationSmall =
+    document.getElementById("notificationSmall");
+
+const injectBtn =
+    document.getElementById("injectBtn");
+
+
+/* ESCRIBIR EN TERMINAL */
+
+function log(text, type = "") {
+
+    const line =
+        document.createElement("div");
+
+    line.className = "log " + type;
+
+    const time =
+        new Date().toLocaleTimeString();
+
+    line.textContent =
+        `[${time}] ${text}`;
+
+    terminal.appendChild(line);
+
+    terminal.scrollTop =
+        terminal.scrollHeight;
+}
+
+
+/* NOTIFICACIÓN */
+
+function mostrarNotificacion(titulo, detalle) {
+
+    notificationTitle.textContent =
+        titulo;
+
+    notificationSmall.textContent =
+        detalle;
+
+    notification.classList.add("show");
+}
+
+
+function ocultarNotificacion() {
+
+    notification.classList.remove("show");
+}
+
+
+/* OBTENER OPCIONES ACTIVADAS */
+
+function opcionesActivas() {
+
+    const nombres = {
+        hsPecho: "HS PECHO",
+        hsCuello: "HS CUELLO",
+        hsAlto: "HS ALTO",
+        caja: "CAJA ESP",
+        cuerpo: "CUERPO ESP",
+        moco: "ESP MOCO",
+        linea: "LÍNEA ESP",
+        esqueleto: "ESQUELETO ESP",
+        antiban: "ANTI BAN",
+        reset: "RESET"
+    };
+
+    let activas = [];
+
+    for (const id in nombres) {
+
+        const elemento =
+            document.getElementById(id);
+
+        if (elemento.checked) {
+            activas.push(nombres[id]);
+        }
+    }
+
+    return activas;
+}
+
+
+/* INYECTAR */
+
+function inyectar() {
+
+    injectBtn.disabled = true;
+
+    status.textContent =
+        "● INJECTING";
+
+    status.className =
+        "warning";
+
+    progress.style.width =
+        "0%";
+
+
+    const activas =
+        opcionesActivas();
+
+
+    log(
+        "Starting visual injection...",
+        "blue"
+    );
+
+
+    if (activas.length > 0) {
+
+        log(
+            "Modules selected: " +
+            activas.join(", ")
+        );
+
+    } else {
+
+        log(
+            "No modules selected."
+        );
+    }
+
+
+    mostrarNotificacion(
+        "INYECTANDO...",
+        "Inicializando módulos..."
+    );
+
+
+    /* ANIMACIÓN DURANTE 3 SEGUNDOS */
+
+    let porcentaje = 0;
+
+    const intervalo =
+        setInterval(() => {
+
+            porcentaje += 10;
+
+            progress.style.width =
+                porcentaje + "%";
+
+            if (porcentaje >= 100) {
+
+                clearInterval(intervalo);
+            }
+
+        }, 300);
+
+
+    setTimeout(() => {
+
+        mostrarNotificacion(
+            "INYECTANDO...",
+            "Aplicando configuración..."
+        );
+
+        log(
+            "Applying visual configuration..."
+        );
+
+
+        /* 1 SEGUNDO DESPUÉS */
+
+        setTimeout(() => {
+
+            mostrarNotificacion(
+                "✓ INYECTADO CON ÉXITO",
+                "Configuración aplicada correctamente."
+            );
+
+            status.textContent =
+                "● ACTIVE";
+
+            status.className =
+                "online";
+
+            progress.style.width =
+                "100%";
+
+            log(
+                "INJECTION COMPLETED SUCCESSFULLY",
+                "success"
+            );
+
+            log(
+                "All selected modules are ready.",
+                "success"
+            );
+
+            injectBtn.disabled =
+                false;
+
+
+            /* DESAPARECER */
+
+            setTimeout(() => {
+
+                ocultarNotificacion();
+
+            }, 3000);
+
+        }, 1000);
+
+    }, 3000);
+}
+
+
+/* RESET */
+
+function resetear() {
+
+    const ids = [
+        "hsPecho",
+        "hsCuello",
+        "hsAlto",
+        "caja",
+        "cuerpo",
+        "moco",
+        "linea",
+        "esqueleto",
+        "antiban",
+        "reset"
+    ];
+
+
+    ids.forEach(id => {
+
+        document.getElementById(id)
+            .checked = false;
+
+    });
+
+
+    progress.style.width =
+        "0%";
+
+    status.textContent =
+        "● OFFLINE";
+
+    status.className =
+        "offline";
+
+
+    log(
+        "All options reset.",
+        "warning"
+    );
+
+
+    mostrarNotificacion(
+        "RESET COMPLETADO",
+        "Todas las opciones fueron desactivadas."
+    );
+
+
+    setTimeout(() => {
+
+        ocultarNotificacion();
+
+    }, 2000);
+}
+
+</script>
+
+</body>
+  </html>
